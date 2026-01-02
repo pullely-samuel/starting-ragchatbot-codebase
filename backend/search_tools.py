@@ -165,10 +165,12 @@ class CourseOutlineTool(Tool):
         if not course_data:
             return f"Could not retrieve metadata for course '{resolved_title}'."
 
-        # Format the output
+        # Format the output with markdown hyperlink for better readability
+        course_link = course_data.get('course_link', '')
+        link_text = f"[View Course]({course_link})" if course_link else "N/A"
         output_lines = [
             f"Course: {course_data.get('title', 'Unknown')}",
-            f"Link: {course_data.get('course_link', 'N/A')}",
+            f"Course Link: {link_text}",
             "",
             "Lessons:"
         ]
