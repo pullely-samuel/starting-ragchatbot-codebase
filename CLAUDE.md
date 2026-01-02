@@ -81,3 +81,23 @@ Documents are chunked (800 chars, 100 overlap) and embedded on server startup.
 ### Frontend
 
 Vanilla HTML/CSS/JS with no build step. Uses marked.js from CDN for markdown rendering.
+
+#### Cache Busting
+
+Static assets use version query parameters for cache busting:
+- `style.css?v=12` in `frontend/index.html`
+- `script.js?v=11` in `frontend/index.html`
+
+**When modifying CSS or JS files**, increment the version number in `index.html` to ensure browsers load the updated files.
+
+#### Playwright Browser Cache Bypass
+
+When testing with Playwright MCP server, the browser may cache static files. To force a fresh load without cache:
+
+```javascript
+// Use page.route() which disables HTTP cache
+await page.route('**/*', route => route.continue());
+await page.goto('http://127.0.0.1:8000');
+```
+
+This is equivalent to a hard refresh (Cmd+Shift+R on Mac). Standard `page.reload()` uses cached resources.
