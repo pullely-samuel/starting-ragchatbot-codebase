@@ -115,6 +115,76 @@ class CourseSearchTool(Tool):
 
         return "\n\n".join(formatted)
 
+
+class CourseOutlineTool(Tool):
+    """Tool for retrieving course outline information"""
+
+    def __init__(self, vector_store: VectorStore):
+        self.store = vector_store
+
+    def get_tool_definition(self) -> Dict[str, Any]:
+        """Return Anthropic tool definition for this tool"""
+        return {
+            "name": "get_course_outline",
+            "description": "Get the outline of a course including title, link, and all lessons. Use this for questions about course structure, syllabus, or lesson lists.",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "course_name": {
+                        "type": "string",
+                        "description": "Course title (partial matches work, e.g. 'MCP', 'Introduction')"
+                    }
+                },
+                "required": ["course_name"]
+            }
+        }
+
+    def execute(self, course_name: str) -> str:
+        """
+        Execute the outline tool with given parameters.
+
+        Args:
+            course_name: Course name to look up
+
+        Returns:
+            Formatted course outline or error message
+        """
+        # Resolve course name using fuzzy matching
+        resolved_title = self.store._resolve_course_name(course_name)
+        if not resolved_title:
+            return f"No course found matching '{course_name}'."
+
+        # Get all courses metadata and find the matching one
+        all_courses = self.store.get_all_courses_metadata()
+        course_data = None
+        for course in all_courses:
+            if course.get('title') == resolved_title:
+                course_data = course
+                break
+
+        if not course_data:
+            return f"Could not retrieve metadata for course '{resolved_title}'."
+
+        # Format the output
+        output_lines = [
+            f"Course: {course_data.get('title', 'Unknown')}",
+            f"Link: {course_data.get('course_link', 'N/A')}",
+            "",
+            "Lessons:"
+        ]
+
+        lessons = course_data.get('lessons', [])
+        if lessons:
+            for lesson in lessons:
+                lesson_num = lesson.get('lesson_number', '?')
+                lesson_title = lesson.get('lesson_title', 'Untitled')
+                output_lines.append(f"- Lesson {lesson_num}: {lesson_title}")
+        else:
+            output_lines.append("No lessons available.")
+
+        return "\n".join(output_lines)
+
+
 class ToolManager:
     """Manages available tools for the AI"""
     
