@@ -47,6 +47,21 @@ Frontend (script.js) → POST /api/query
 | `backend/vector_store.py` | ChromaDB interface with two collections: `course_catalog` (metadata) and `course_content` (chunks) |
 | `backend/document_processor.py` | Parses course docs, extracts metadata, chunks text with overlap |
 | `backend/session_manager.py` | Maintains conversation history per session |
+| `backend/config.py` | Central configuration (chunk size, max results, model settings) |
+
+### Tool-Calling Architecture
+
+The system uses Claude's tool-calling capability rather than automatic RAG retrieval:
+1. User query is sent to Claude with `search_course_content` tool definition
+2. Claude decides whether to search based on the query
+3. If `stop_reason == "tool_use"`, `AIGenerator._handle_tool_execution()` runs the tool
+4. Tool results are sent back to Claude for final response generation
+
+### Vector Store Collections
+
+ChromaDB maintains two separate collections:
+- **`course_catalog`**: Stores course metadata (title, instructor, lesson list) for course name resolution
+- **`course_content`**: Stores chunked course content for semantic search with metadata filters (course_title, lesson_number)
 
 ### Document Processing
 
