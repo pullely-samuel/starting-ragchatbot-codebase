@@ -30,6 +30,24 @@ uv run pytest -v
 
 Tests are located in `backend/tests/`. Run tests after major changes to verify nothing is broken. When modifying functionality, update corresponding tests to reflect new logic.
 
+## Code Quality
+
+```bash
+# Run all quality checks (linting + format check)
+./scripts/quality.sh check
+
+# Auto-fix issues (format + lint fixes)
+./scripts/quality.sh fix
+
+# Format code only
+./scripts/quality.sh format
+
+# Lint code only
+./scripts/quality.sh lint
+```
+
+Run `./scripts/quality.sh check` before committing to ensure code meets style standards. Use `./scripts/quality.sh fix` to auto-fix most issues.
+
 ## Git Workflow
 
 After changes are made and tests pass, stage and commit using git. Group commits logically by change type—avoid bundling unrelated changes into a single commit with a lengthy message. Prefer multiple focused commits over one large mixed commit.
