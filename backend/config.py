@@ -1,9 +1,13 @@
 import os
 from dataclasses import dataclass
+from pathlib import Path
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
+
+# Calculate paths relative to this file (works from any working directory)
+BACKEND_DIR = Path(__file__).parent
 
 @dataclass
 class Config:
@@ -22,7 +26,7 @@ class Config:
     MAX_HISTORY: int = 2         # Number of conversation messages to remember
     
     # Database paths
-    CHROMA_PATH: str = "./chroma_db"  # ChromaDB storage location
+    CHROMA_PATH: str = str(BACKEND_DIR / "chroma_db")  # ChromaDB storage location
 
 config = Config()
 
