@@ -1,5 +1,7 @@
 from vector_store import SearchResults, VectorStore
 
+pytestmark = pytest.mark.unit
+
 
 class TestSearchResults:
     """Tests for the SearchResults dataclass"""

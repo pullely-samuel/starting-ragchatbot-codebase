@@ -26,9 +26,14 @@ API docs: http://localhost:8000/docs
 ```bash
 # Run all tests
 uv run pytest -v
+
+# Run by category
+uv run pytest -m unit          # Fast unit tests (mocked dependencies)
+uv run pytest -m e2e           # API endpoint tests
+uv run pytest -m integration   # Tests requiring ANTHROPIC_API_KEY
 ```
 
-Tests are located in `backend/tests/`. Run tests after major changes to verify nothing is broken. When modifying functionality, update corresponding tests to reflect new logic.
+Tests are located in `backend/tests/`. Shared fixtures are in `conftest.py`. Run tests after major changes to verify nothing is broken. When modifying functionality, update corresponding tests to reflect new logic.
 
 ## Code Quality
 

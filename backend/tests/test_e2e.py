@@ -20,6 +20,7 @@ def client():
     return TestClient(app)
 
 
+@pytest.mark.e2e
 class TestCoursesEndpoint:
     """Tests for endpoints that don't require the API key"""
 
@@ -35,6 +36,7 @@ class TestCoursesEndpoint:
         assert isinstance(data["course_titles"], list)
 
 
+@pytest.mark.e2e
 @pytest.mark.skipif(
     not os.getenv("ANTHROPIC_API_KEY"),
     reason="ANTHROPIC_API_KEY not set - skipping query E2E tests",
@@ -78,6 +80,7 @@ class TestQueryEndpointE2E:
         assert response.status_code == 422
 
 
+@pytest.mark.e2e
 class TestSessionEndpoint:
     """Tests for session management endpoint"""
 

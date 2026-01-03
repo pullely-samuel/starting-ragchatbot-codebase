@@ -1,5 +1,7 @@
 from unittest.mock import Mock, patch
 
+pytestmark = pytest.mark.unit
+
 
 class TestRAGSystemQuery:
     """Tests for RAGSystem.query() method"""

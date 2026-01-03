@@ -24,6 +24,12 @@ dev = [
 [tool.pytest.ini_options]
 pythonpath = ["backend"]
 testpaths = ["backend/tests"]
+markers = [
+    "unit: Unit tests for individual components",
+    "integration: Tests requiring external services (API keys)",
+    "e2e: End-to-end tests through HTTP endpoints",
+    "slow: Tests that take longer to run",
+]
 
 [tool.ruff]
 target-version = "py313"
