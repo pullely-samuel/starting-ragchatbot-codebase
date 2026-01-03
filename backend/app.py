@@ -1,19 +1,43 @@
 import warnings
 warnings.filterwarnings("ignore", message="resource_tracker: There appear to be.*")
 
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
-import os
+from pathlib import Path
 
 from config import config
 from rag_system import RAGSystem
 
+# Calculate directory paths relative to this file (works from any working directory)
+BACKEND_DIR = Path(__file__).parent
+PROJECT_DIR = BACKEND_DIR.parent
+FRONTEND_DIR = PROJECT_DIR / "frontend"
+DOCS_DIR = PROJECT_DIR / "docs"
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Handle startup and shutdown events"""
+    # Startup: Load initial documents
+    if DOCS_DIR.exists():
+        print("Loading initial documents...")
+        try:
+            courses, chunks = rag_system.add_course_folder(str(DOCS_DIR), clear_existing=False)
+            print(f"Loaded {courses} courses with {chunks} chunks")
+        except Exception as e:
+            print(f"Error loading documents: {e}")
+
+    yield  # App runs here
+
+    # Shutdown: (nothing needed currently)
+
+
 # Initialize FastAPI app
-app = FastAPI(title="Course Materials RAG System", root_path="")
+app = FastAPI(title="Course Materials RAG System", root_path="", lifespan=lifespan)
 
 # Add trusted host middleware for proxy
 app.add_middleware(
@@ -91,23 +115,8 @@ async def clear_session(session_id: str):
     rag_system.session_manager.clear_session(session_id)
     return {"status": "cleared", "session_id": session_id}
 
-@app.on_event("startup")
-async def startup_event():
-    """Load initial documents on startup"""
-    docs_path = "../docs"
-    if os.path.exists(docs_path):
-        print("Loading initial documents...")
-        try:
-            courses, chunks = rag_system.add_course_folder(docs_path, clear_existing=False)
-            print(f"Loaded {courses} courses with {chunks} chunks")
-        except Exception as e:
-            print(f"Error loading documents: {e}")
-
 # Custom static file handler with no-cache headers for development
-from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-import os
-from pathlib import Path
 
 
 class DevStaticFiles(StaticFiles):
@@ -119,7 +128,7 @@ class DevStaticFiles(StaticFiles):
             response.headers["Pragma"] = "no-cache"
             response.headers["Expires"] = "0"
         return response
-    
-    
-# Serve static files for the frontend
-app.mount("/", StaticFiles(directory="../frontend", html=True), name="static")
+
+
+# Serve static files for the frontend (using absolute path)
+app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="static")

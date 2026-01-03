@@ -1,3 +1,7 @@
+# Load environment variables FIRST, before any other imports that might check them
+from dotenv import load_dotenv
+load_dotenv()
+
 import pytest
 from unittest.mock import Mock
 
