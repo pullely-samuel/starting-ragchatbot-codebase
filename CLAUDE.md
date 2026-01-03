@@ -21,6 +21,15 @@ API docs: http://localhost:8000/docs
 
 **Always use `uv run` to execute Python scripts, not `python` directly.** This ensures the correct virtual environment and dependencies are used.
 
+## Testing
+
+```bash
+# Run all tests
+uv run pytest -v
+```
+
+Tests are located in `backend/tests/`. Run tests after major changes to verify nothing is broken. When modifying functionality, update corresponding tests to reflect new logic.
+
 ## Architecture
 
 ### Request Flow
