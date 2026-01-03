@@ -32,3 +32,6 @@ Thumbs.db
 
 # Playwright MCP screenshots
 .playwright-mcp/
+
+# Git Worktrees
+.worktrees/
