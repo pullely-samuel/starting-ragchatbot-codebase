@@ -1,9 +1,9 @@
 import anthropic
-from typing import List, Optional, Dict
+
 
 class AIGenerator:
     """Handles interactions with Anthropic's Claude API for generating responses"""
-    
+
     # Static system prompt to avoid rebuilding on each call
     SYSTEM_PROMPT = """ You are an AI assistant specialized in course materials and educational content with access to tools for course information.
 
@@ -31,22 +31,21 @@ All responses must be:
 4. **Example-supported** - Include relevant examples when they aid understanding
 Provide only the direct answer to what was asked.
 """
-    
+
     def __init__(self, api_key: str, model: str):
         self.client = anthropic.Anthropic(api_key=api_key)
         self.model = model
-        
+
         # Pre-build base API parameters
-        self.base_params = {
-            "model": self.model,
-            "temperature": 0,
-            "max_tokens": 800
-        }
-    
-    def generate_response(self, query: str,
-                         conversation_history: Optional[str] = None,
-                         tools: Optional[List] = None,
-                         tool_manager=None) -> str:
+        self.base_params = {"model": self.model, "temperature": 0, "max_tokens": 800}
+
+    def generate_response(
+        self,
+        query: str,
+        conversation_history: str | None = None,
+        tools: list | None = None,
+        tool_manager=None,
+    ) -> str:
         """
         Generate AI response with optional tool usage and conversation context.
         Supports sequential tool calling up to 2 rounds.
@@ -72,11 +71,11 @@ Provide only the direct answer to what was asked.
 
         # Tool calling loop (max 2 rounds)
         max_rounds = 2
-        for round_num in range(max_rounds):
+        for _round_num in range(max_rounds):
             api_params = {
                 **self.base_params,
                 "messages": messages,
-                "system": system_content
+                "system": system_content,
             }
 
             # Include tools for potential tool calls
@@ -102,12 +101,12 @@ Provide only the direct answer to what was asked.
         final_params = {
             **self.base_params,
             "messages": messages,
-            "system": system_content
+            "system": system_content,
         }
         final_response = self.client.messages.create(**final_params)
         return self._extract_text_response(final_response)
 
-    def _execute_tools(self, response, tool_manager) -> Optional[List[Dict]]:
+    def _execute_tools(self, response, tool_manager) -> list[dict] | None:
         """
         Execute all tool calls from response.
 
@@ -123,18 +122,22 @@ Provide only the direct answer to what was asked.
             if block.type == "tool_use":
                 try:
                     result = tool_manager.execute_tool(block.name, **block.input)
-                    tool_results.append({
-                        "type": "tool_result",
-                        "tool_use_id": block.id,
-                        "content": result
-                    })
+                    tool_results.append(
+                        {
+                            "type": "tool_result",
+                            "tool_use_id": block.id,
+                            "content": result,
+                        }
+                    )
                 except Exception as e:
-                    tool_results.append({
-                        "type": "tool_result",
-                        "tool_use_id": block.id,
-                        "content": f"Error: {str(e)}",
-                        "is_error": True
-                    })
+                    tool_results.append(
+                        {
+                            "type": "tool_result",
+                            "tool_use_id": block.id,
+                            "content": f"Error: {str(e)}",
+                            "is_error": True,
+                        }
+                    )
         return tool_results if tool_results else None
 
     def _extract_text_response(self, response) -> str:
@@ -148,6 +151,6 @@ Provide only the direct answer to what was asked.
             Text content as string, or empty string if no text found
         """
         for block in response.content:
-            if hasattr(block, 'text'):
+            if hasattr(block, "text"):
                 return block.text
         return ""

@@ -5,9 +5,12 @@ These tests use FastAPI's TestClient to make real HTTP requests.
 Query tests are skipped if ANTHROPIC_API_KEY is not set.
 Run with: uv run pytest backend/tests/test_e2e.py -v
 """
-import pytest
+
 import os
+
+import pytest
 from fastapi.testclient import TestClient
+
 from app import app
 
 
@@ -34,16 +37,16 @@ class TestCoursesEndpoint:
 
 @pytest.mark.skipif(
     not os.getenv("ANTHROPIC_API_KEY"),
-    reason="ANTHROPIC_API_KEY not set - skipping query E2E tests"
+    reason="ANTHROPIC_API_KEY not set - skipping query E2E tests",
 )
 class TestQueryEndpointE2E:
     """End-to-end tests for the query endpoint (requires API key)"""
 
     def test_query_returns_valid_response(self, client):  # Uses module-level fixture
         """Test full query flow through HTTP endpoint"""
-        response = client.post("/api/query", json={
-            "query": "What courses are available?"
-        })
+        response = client.post(
+            "/api/query", json={"query": "What courses are available?"}
+        )
 
         assert response.status_code == 200
         data = response.json()
@@ -55,17 +58,15 @@ class TestQueryEndpointE2E:
     def test_query_with_session_maintains_context(self, client):
         """Test that session ID allows conversation continuity"""
         # First query
-        response1 = client.post("/api/query", json={
-            "query": "Hello"
-        })
+        response1 = client.post("/api/query", json={"query": "Hello"})
         assert response1.status_code == 200
         session_id = response1.json()["session_id"]
 
         # Second query with same session
-        response2 = client.post("/api/query", json={
-            "query": "What did I just say?",
-            "session_id": session_id
-        })
+        response2 = client.post(
+            "/api/query",
+            json={"query": "What did I just say?", "session_id": session_id},
+        )
         assert response2.status_code == 200
         assert response2.json()["session_id"] == session_id
 

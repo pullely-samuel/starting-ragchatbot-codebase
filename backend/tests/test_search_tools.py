@@ -1,5 +1,4 @@
-import pytest
-from search_tools import CourseSearchTool, CourseOutlineTool, ToolManager
+from search_tools import CourseOutlineTool, CourseSearchTool, ToolManager
 from vector_store import SearchResults
 
 
@@ -20,9 +19,7 @@ class TestCourseSearchTool:
         tool.execute(query="test query", course_name="Python", lesson_number=1)
 
         mock_vector_store.search.assert_called_once_with(
-            query="test query",
-            course_name="Python",
-            lesson_number=1
+            query="test query", course_name="Python", lesson_number=1
         )
 
     def test_execute_with_error_returns_error_message(self, mock_vector_store):
@@ -61,11 +58,7 @@ class TestCourseSearchTool:
             documents=[], metadata=[], distances=[]
         )
         tool = CourseSearchTool(mock_vector_store)
-        result = tool.execute(
-            query="test",
-            course_name="Python",
-            lesson_number=3
-        )
+        result = tool.execute(query="test", course_name="Python", lesson_number=3)
 
         assert "Python" in result
         assert "lesson 3" in result
@@ -84,7 +77,7 @@ class TestCourseSearchTool:
         mock_vector_store.search.return_value = SearchResults(
             documents=["Content"],
             metadata=[{"course_title": "Test Course", "lesson_number": None}],
-            distances=[0.1]
+            distances=[0.1],
         )
         tool = CourseSearchTool(mock_vector_store)
         tool.execute(query="test")
