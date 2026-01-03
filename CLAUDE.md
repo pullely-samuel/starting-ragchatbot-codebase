@@ -30,6 +30,10 @@ uv run pytest -v
 
 Tests are located in `backend/tests/`. Run tests after major changes to verify nothing is broken. When modifying functionality, update corresponding tests to reflect new logic.
 
+## Git Workflow
+
+After changes are made and tests pass, stage and commit using git. Group commits logically by change type—avoid bundling unrelated changes into a single commit with a lengthy message. Prefer multiple focused commits over one large mixed commit.
+
 ## Architecture
 
 ### Request Flow
