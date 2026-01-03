@@ -1,3 +1,5 @@
+import pytest
+
 from search_tools import CourseOutlineTool, CourseSearchTool, ToolManager
 from vector_store import SearchResults
 

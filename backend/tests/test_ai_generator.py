@@ -1,5 +1,7 @@
 from unittest.mock import Mock, patch
 
+import pytest
+
 from ai_generator import AIGenerator
 
 pytestmark = pytest.mark.unit

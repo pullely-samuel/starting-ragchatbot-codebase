@@ -1,3 +1,5 @@
+import pytest
+
 from vector_store import SearchResults, VectorStore
 
 pytestmark = pytest.mark.unit
