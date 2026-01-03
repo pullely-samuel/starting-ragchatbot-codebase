@@ -3,14 +3,14 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from unittest.mock import MagicMock, Mock  # noqa: E402
+from unittest.mock import Mock  # noqa: E402
 
 import pytest  # noqa: E402
-
 
 # =============================================================================
 # Vector Store Fixtures
 # =============================================================================
+
 
 @pytest.fixture
 def mock_vector_store():
@@ -52,6 +52,7 @@ def mock_tool_manager():
 # Anthropic API Fixtures
 # =============================================================================
 
+
 @pytest.fixture
 def mock_anthropic_client():
     """Mock Anthropic client for testing without API calls"""
@@ -85,10 +86,12 @@ def mock_anthropic_tool_response():
 # Configuration Fixtures
 # =============================================================================
 
+
 @pytest.fixture
 def test_config():
     """Test configuration with safe defaults"""
     from config import Config
+
     config = Config()
     config.MAX_RESULTS = 5
     config.CHUNK_SIZE = 800
@@ -100,6 +103,7 @@ def test_config():
 # Sample Test Data
 # =============================================================================
 
+
 @pytest.fixture
 def sample_course_metadata():
     """Sample course metadata for testing"""
@@ -108,10 +112,22 @@ def sample_course_metadata():
         "course_link": "http://example.com/ml-course",
         "instructor": "Dr. Test",
         "lessons": [
-            {"lesson_number": 0, "lesson_title": "Welcome", "lesson_link": "http://example.com/ml-course/0"},
-            {"lesson_number": 1, "lesson_title": "Basics of ML", "lesson_link": "http://example.com/ml-course/1"},
-            {"lesson_number": 2, "lesson_title": "Neural Networks", "lesson_link": "http://example.com/ml-course/2"},
-        ]
+            {
+                "lesson_number": 0,
+                "lesson_title": "Welcome",
+                "lesson_link": "http://example.com/ml-course/0",
+            },
+            {
+                "lesson_number": 1,
+                "lesson_title": "Basics of ML",
+                "lesson_link": "http://example.com/ml-course/1",
+            },
+            {
+                "lesson_number": 2,
+                "lesson_title": "Neural Networks",
+                "lesson_link": "http://example.com/ml-course/2",
+            },
+        ],
     }
 
 
@@ -119,39 +135,40 @@ def sample_course_metadata():
 def sample_search_results():
     """Sample search results for testing"""
     from vector_store import SearchResults
+
     return SearchResults(
         documents=[
             "Machine learning is a subset of artificial intelligence.",
             "Neural networks are inspired by biological neurons.",
-            "Deep learning uses multiple layers of neural networks."
+            "Deep learning uses multiple layers of neural networks.",
         ],
         metadata=[
             {"course_title": "Introduction to Machine Learning", "lesson_number": 1},
             {"course_title": "Introduction to Machine Learning", "lesson_number": 2},
-            {"course_title": "Deep Learning Fundamentals", "lesson_number": 1}
+            {"course_title": "Deep Learning Fundamentals", "lesson_number": 1},
         ],
-        distances=[0.15, 0.22, 0.31]
+        distances=[0.15, 0.22, 0.31],
     )
 
 
 @pytest.fixture
 def sample_query_request():
     """Sample query request for API testing"""
-    return {
-        "query": "What is machine learning?",
-        "session_id": "test-session-123"
-    }
+    return {"query": "What is machine learning?", "session_id": "test-session-123"}
 
 
 # =============================================================================
 # FastAPI Test Client Fixtures
 # =============================================================================
 
+
 @pytest.fixture
 def test_client():
     """Create a test client for FastAPI app"""
     from fastapi.testclient import TestClient
+
     from app import app
+
     return TestClient(app)
 
 
@@ -160,10 +177,9 @@ def mock_rag_system():
     """Mock RAGSystem for isolated API testing"""
     rag = Mock()
     rag.query = Mock(return_value=("Test answer", [{"source": "test"}]))
-    rag.get_course_analytics = Mock(return_value={
-        "total_courses": 2,
-        "course_titles": ["Course A", "Course B"]
-    })
+    rag.get_course_analytics = Mock(
+        return_value={"total_courses": 2, "course_titles": ["Course A", "Course B"]}
+    )
     rag.session_manager = Mock()
     rag.session_manager.create_session = Mock(return_value="new-session-id")
     rag.session_manager.clear_session = Mock()

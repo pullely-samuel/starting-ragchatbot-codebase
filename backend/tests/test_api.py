@@ -4,8 +4,10 @@ API endpoint tests for the FastAPI application.
 Tests HTTP request/response handling, validation, and error scenarios.
 Run with: uv run pytest backend/tests/test_api.py -v
 """
+
+from unittest.mock import patch
+
 import pytest
-from unittest.mock import patch, Mock
 from fastapi.testclient import TestClient
 
 
@@ -13,6 +15,7 @@ from fastapi.testclient import TestClient
 def client():
     """Create test client for the FastAPI app"""
     from app import app
+
     return TestClient(app)
 
 
@@ -67,7 +70,7 @@ class TestQueryEndpointValidation:
         response = client.post(
             "/api/query",
             content="not valid json",
-            headers={"Content-Type": "application/json"}
+            headers={"Content-Type": "application/json"},
         )
 
         assert response.status_code == 422
@@ -75,9 +78,7 @@ class TestQueryEndpointValidation:
     def test_optional_session_id_accepted(self, client):
         """Test that session_id is optional"""
         # This test may hit the real API, so we just verify the request is accepted
-        response = client.post("/api/query", json={
-            "query": "test"
-        })
+        response = client.post("/api/query", json={"query": "test"})
 
         # Request should be accepted (200 or 500 if API key missing)
         assert response.status_code in [200, 500]
@@ -89,7 +90,7 @@ class TestQueryEndpointErrorHandling:
 
     def test_query_error_returns_500(self, client):
         """Test that internal errors return 500 status"""
-        with patch('app.rag_system') as mock_rag:
+        with patch("app.rag_system") as mock_rag:
             mock_rag.session_manager.create_session.return_value = "test-session"
             mock_rag.query.side_effect = Exception("Internal error")
 
@@ -102,7 +103,7 @@ class TestQueryEndpointErrorHandling:
 
     def test_query_response_structure(self, client):
         """Test that successful response has correct structure"""
-        with patch('app.rag_system') as mock_rag:
+        with patch("app.rag_system") as mock_rag:
             mock_rag.session_manager.create_session.return_value = "test-session"
             mock_rag.query.return_value = ("Test answer", [{"source": "test"}])
 
@@ -123,7 +124,7 @@ class TestCoursesEndpointErrorHandling:
 
     def test_courses_error_returns_500(self, client):
         """Test that internal errors return 500 status"""
-        with patch('app.rag_system') as mock_rag:
+        with patch("app.rag_system") as mock_rag:
             mock_rag.get_course_analytics.side_effect = Exception("Database error")
 
             response = client.get("/api/courses")
@@ -135,10 +136,10 @@ class TestCoursesEndpointErrorHandling:
 
     def test_courses_response_structure(self, client):
         """Test that successful response has correct structure"""
-        with patch('app.rag_system') as mock_rag:
+        with patch("app.rag_system") as mock_rag:
             mock_rag.get_course_analytics.return_value = {
                 "total_courses": 3,
-                "course_titles": ["Course A", "Course B", "Course C"]
+                "course_titles": ["Course A", "Course B", "Course C"],
             }
 
             response = client.get("/api/courses")
@@ -181,8 +182,8 @@ class TestAPIHeaders:
             "/api/query",
             headers={
                 "Origin": "http://localhost:3000",
-                "Access-Control-Request-Method": "POST"
-            }
+                "Access-Control-Request-Method": "POST",
+            },
         )
 
         # CORS preflight should succeed
