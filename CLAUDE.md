@@ -55,10 +55,10 @@ Run `./scripts/quality.sh check` before committing to ensure code meets style st
 
 ## Git Workflow
 
-**Before every commit**, run both checks:
+**Before every commit**, run both checks in this order:
 ```bash
+./scripts/quality.sh check    # Code style must pass (run first - fixes may affect tests)
 uv run pytest -v              # All tests must pass
-./scripts/quality.sh check    # Code style must pass
 ```
 
 After changes are made and both checks pass, stage and commit using git. Group commits logically by change type—avoid bundling unrelated changes into a single commit with a lengthy message. Prefer multiple focused commits over one large mixed commit.
