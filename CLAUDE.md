@@ -105,11 +105,7 @@ The app supports dark (default) and light themes via CSS variables and a `data-t
 
 #### Cache Busting
 
-Static assets use version query parameters for cache busting:
-- `style.css?v=14` in `frontend/index.html`
-- `script.js?v=12` in `frontend/index.html`
-
-**When modifying CSS or JS files**, increment the version number in `index.html` to ensure browsers load the updated files.
+Static assets use version query parameters for cache busting (e.g., `style.css?v=14`). **When modifying CSS or JS files**, increment the version number in `index.html` to ensure browsers load the updated files.
 
 #### Playwright Browser Cache Bypass
 
