@@ -2,6 +2,8 @@ import pytest
 from unittest.mock import Mock, patch
 from ai_generator import AIGenerator
 
+pytestmark = pytest.mark.unit
+
 
 class TestAIGeneratorBasic:
     """Tests for basic AIGenerator functionality"""

@@ -2,6 +2,8 @@ import pytest
 from search_tools import CourseSearchTool, CourseOutlineTool, ToolManager
 from vector_store import SearchResults
 
+pytestmark = pytest.mark.unit
+
 
 class TestCourseSearchTool:
     """Tests for CourseSearchTool.execute()"""

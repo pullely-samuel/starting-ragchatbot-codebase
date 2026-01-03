@@ -14,6 +14,8 @@ pytestmark = pytest.mark.skipif(
 )
 
 
+@pytest.mark.integration
+@pytest.mark.slow
 class TestAnthropicAPIIntegration:
     """Tests that verify the Anthropic API key and connection work"""
 

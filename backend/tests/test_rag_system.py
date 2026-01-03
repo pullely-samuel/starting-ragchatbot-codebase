@@ -1,6 +1,8 @@
 import pytest
 from unittest.mock import Mock, patch, MagicMock
 
+pytestmark = pytest.mark.unit
+
 
 class TestRAGSystemQuery:
     """Tests for RAGSystem.query() method"""
